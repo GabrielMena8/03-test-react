@@ -3,6 +3,9 @@ import styled from '@emotion/styled'
 import imagen from './img/cripto.png'
 import { Formulario } from './Components/Formulario';
 import { monedas } from './data/monedas';
+import { Resultado } from './Components/Resultado';
+import { Spinner } from './Components/Spinner';
+
 
 const Contenedor = styled.div`
   max-width: 90rem;
@@ -46,43 +49,58 @@ const Heading = styled.h1`
 
 function App() {
   const [monedas, setMonedas] = useState({});
+  const [cotizacion, setCotizacion] = useState({});
+  const [cargar, setCargar] = useState(false);
 
-//https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD,EUR
+
+  //https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD,EUR
 
   useEffect(() => {
-    if(Object.keys(monedas).length > 0){
+    if (Object.keys(monedas).length > 0) {
 
       const cotizar = async () => {
-        const {moneda, cripto} = monedas;
+        setCargar(true);
 
-        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cripto}&tsyms=${moneda}`
-        
-        console.log(url);
+        const { moneda, cmoneda } = monedas;
 
-        // console.log(data);
+
+        const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${cmoneda}&tsyms=${moneda}`
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        setCotizacion(data.DISPLAY[cmoneda][moneda]);
+        console.log(data.DISPLAY[cmoneda][moneda]);
+        setCargar(false);
       }
-    cotizar();
+      cotizar();
 
-    
+
     }
 
-    
+
   }
-  ,[monedas])
+    , [monedas])
 
 
   return (
-    <>  
+    <>
       <Contenedor>
-        <ImagenCripto src={imagen} 
-        alt="imagen cripto"/>
-        
-        <div>
-            <Heading>Criptomonedas</Heading>
-            <Formulario  
-              setMoneda={setMonedas}
+        <ImagenCripto src={imagen}
+          alt="imagen cripto" />
 
-            />
+        <div>
+          <Heading>Criptomonedas</Heading>
+          <Formulario
+            setMoneda={setMonedas}
+
+          />
+          
+          {cargar &&
+            <Spinner />}
+          {cotizacion.PRICE && <Resultado 
+            cotizacion={cotizacion}
+          />}
         </div>
       </Contenedor>
     </>

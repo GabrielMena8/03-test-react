@@ -38,12 +38,12 @@ const Submit = styled.input`
 export const Formulario = ({setMoneda}) => {
   
   const [cripto, setCripto] = useState([]);
-
+  const [error, setError] = useState(false);
 
 
   const [moneda, SelectMoneda] = useSelectMoneda("Elige tu moneda", monedas);
-  const [cmoneda, SelectcMoneda] = useSelectMoneda("Elige tu criptomoneda",cripto);
-  const [error, setError] = useState(false);
+  const [cmoneda, SelectcMoneda] = useSelectMoneda("Elige tu criptomoneda", cripto);
+  
   
   
   
@@ -55,14 +55,17 @@ export const Formulario = ({setMoneda}) => {
       
       const array = data.Data.map(cripto => {
         const objeto = {
-          id: cripto.CoinInfo.Id,
+          id: cripto.CoinInfo.Name,
           nombre: cripto.CoinInfo.FullName
         }
+        console.log(objeto);
         return objeto;
+
       })
 
       setCripto(array);
-      console.log(array);
+      // console.log(array);
+      
     }
     fetchData();
   }, [])
@@ -70,22 +73,24 @@ export const Formulario = ({setMoneda}) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-
-    console.log(cmoneda);
     if([moneda, cmoneda].includes('')) {
       setError(true);
-      
 
+  
 
       return;
     }
     setError(false);
     
     setMoneda({
-      moneda,
-      cmoneda
+      cmoneda,
+      moneda
+      
     
     });
+
+    console.log(moneda);
+    console.log(cmoneda);
   }
 
 
